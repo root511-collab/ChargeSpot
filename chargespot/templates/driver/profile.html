@@ -1,0 +1,12 @@
+{% extends 'base.html' %}{% block title %}Profile · ChargeSpot{% endblock %}{% block content %}
+<h1>My profile</h1><div class="grid g2">
+<form class="card" method="post"><input type="hidden" name="form" value="vehicle"><h2 style="margin-top:0">Vehicle</h2>
+<label>Plate number</label><input name="plate" value="{{ vehicle.plate if vehicle }}" placeholder="ABC 1234">
+<label>Connector type</label><select name="connector_type">{% for c in connectors %}<option {{ 'selected' if vehicle and vehicle.connector_type==c }}>{{ c }}</option>{% endfor %}</select>
+<label>Battery capacity (kWh)</label><input name="battery_kwh" value="{{ vehicle.battery_kwh if vehicle }}">
+<p><button>Save vehicle</button></p></form>
+<form class="card" method="post"><input type="hidden" name="form" value="payment"><h2 style="margin-top:0">Payment method</h2>
+{% if pm %}<p>Saved: <b>{{ pm.brand }} •••• {{ pm.last4 }}</b> (expires {{ pm.expiry }})</p>{% endif %}
+<label>Card number</label><input name="card_number" placeholder="4111 1111 1111 1111"><label>Expiry (MM/YY)</label><input name="expiry" placeholder="12/28">
+<p><button>Save card</button></p><p class="muted">Only the brand and the last 4 digits are stored. Payments go through the external payment gateway.</p></form></div>
+{% endblock %}

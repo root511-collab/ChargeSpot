@@ -1,0 +1,5 @@
+{% extends 'base.html' %}{% block title %}Accounts · ChargeSpot{% endblock %}{% block content %}
+<h1>User accounts</h1><div class="tbl"><table><tr><th>Name</th><th>Email</th><th>Role</th><th>Reservations</th><th>No-shows</th><th>State</th><th></th></tr>
+{% for u in rows %}<tr><td>{{ u.name }}</td><td>{{ u.email }}</td><td>{{ u.role|capitalize }}</td><td>{{ u.res }}</td><td>{{ u.noshow }}</td>
+<td><span class="badge {{ 'Available' if u.is_active else 'Out' }}">{{ 'Active' if u.is_active else 'Deactivated' }}</span></td>
+<td>{% if u.id != g.user.id %}<form class="inline" method="post"><input type="hidden" name="user_id" value="{{ u.id }}"><button class="small {{ 'danger' if u.is_active else 'sec' }}">{{ 'Deactivate' if u.is_active else 'Activate' }}</button></form>{% endif %}</td></tr>{% endfor %}</table></div>{% endblock %}

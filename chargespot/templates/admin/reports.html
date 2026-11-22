@@ -1,0 +1,9 @@
+{% extends 'base.html' %}{% block title %}Reports · ChargeSpot{% endblock %}{% block content %}
+<h1>Usage and revenue report</h1>
+<p>{% for p in ['daily','weekly','monthly'] %}<a class="btn {{ '' if rep.period==p else 'sec' }}" href="{{ url_for('admin.reports', period=p) }}">{{ p|capitalize }}</a> {% endfor %}
+<a class="btn sec" href="{{ url_for('admin.reports', period=rep.period, format='csv') }}">Download CSV</a></p>
+<p class="muted">Period: {{ rep.start }} to {{ rep.end }}</p>
+<div class="grid g4"><div class="stat"><b>{{ rep.total_sessions }}</b><span>Charging sessions</span></div><div class="stat"><b>{{ rep.total_energy }} kWh</b><span>Energy delivered</span></div>
+<div class="stat"><b>{{ rep.total_revenue|money }}</b><span>Revenue</span></div></div>
+<h2>Per charger</h2><div class="tbl"><table><tr><th>Station</th><th>Charger</th><th>Sessions</th><th>Energy</th><th>Revenue</th><th>Utilization</th></tr>
+{% for r in rep.rows %}<tr><td>{{ r.station }}</td><td>{{ r.charger }}</td><td>{{ r.sessions }}</td><td>{{ r.energy }} kWh</td><td>{{ r.revenue|money }}</td><td>{{ r.utilization }}%</td></tr>{% endfor %}</table></div>{% endblock %}

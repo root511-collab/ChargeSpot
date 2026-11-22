@@ -1,0 +1,13 @@
+{% extends 'base.html' %}{% block title %}{{ s.name }} · ChargeSpot{% endblock %}{% block content %}
+<p><a href="{{ url_for('driver.search') }}">← Back to search</a></p><h1>{{ s.name }}</h1><p class="muted">{{ s.address }}</p>
+<div class="grid g2">{% for c in chargers %}<div class="card"><div class="station"><div><h2 style="margin:0">Charger {{ c.label }}</h2>
+<div class="muted">{{ c.connector_type }} · {{ c.current_type }} · {{ c.power_kw|int }} kW · {{ '%.2f'|format(c.price_per_kwh) }} SAR/kWh</div></div>
+<span class="badge {{ c.status }}">{{ c.status }}</span></div>
+{% if upcoming[c.id] %}<p class="muted">Booked: {% for u in upcoming[c.id] %}{{ u.start_time[11:] }}–{{ u.end_time[11:] }} ({{ u.start_time[:10] }}){{ ', ' if not loop.last }}{% endfor %}</p>{% endif %}
+{% if c.status != 'Out of Service' %}<form method="post" action="{{ url_for('driver.reserve', cid=c.id) }}"><div class="row">
+<div><label>Start</label><input type="datetime-local" name="start" value="{{ default_start }}" required></div>
+<div><label>End</label><input type="datetime-local" name="end" value="{{ default_end }}" required></div>
+<div style="max-width:150px"><label>Promo code</label><input name="promo" placeholder="optional"></div>
+<div style="flex:0"><button>Reserve</button></div></div></form>{% else %}<p class="muted">This charger is out of service.</p>{% endif %}</div>{% endfor %}</div>
+<p class="muted">The charger is held for you during your time window. If you do not check in within 15 minutes of the start time, the reservation is released automatically.</p>
+{% endblock %}

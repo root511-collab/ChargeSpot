@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% block title %}Promo codes · ChargeSpot{% endblock %}{% block content %}
+<h1>Promo codes</h1><p class="muted">Drivers enter a promo code when they reserve a charger. The discount is applied to the session cost at payment.</p>
+<div class="tbl"><table><tr><th>Code</th><th>Description</th><th>Discount</th><th>Expires</th><th>Used</th><th>State</th><th></th></tr>
+{% for p in rows %}<tr><td><code>{{ p.code }}</code></td><td>{{ p.description }}</td><td>{{ p.percent }}%</td><td>{{ p.expires_on }}</td><td>{{ p.used }} / {{ p.max_uses }}</td>
+<td><span class="badge {{ 'Available' if p.is_active else 'Out' }}">{{ 'Active' if p.is_active else 'Disabled' }}</span></td>
+<td><form class="inline" method="post"><input type="hidden" name="action" value="toggle"><input type="hidden" name="code" value="{{ p.code }}"><button class="small {{ 'danger' if p.is_active else 'sec' }}">{{ 'Disable' if p.is_active else 'Enable' }}</button></form></td></tr>{% endfor %}</table></div>
+<form class="card" method="post"><h2 style="margin-top:0">Create a promo code</h2><div class="row">
+<div><label>Code</label><input name="code" placeholder="e.g. RAMADAN15"></div><div style="flex:2"><label>Description</label><input name="description"></div>
+<div><label>Discount (%)</label><input name="percent"></div><div><label>Expires on</label><input type="date" name="expires_on"></div>
+<div><label>Maximum uses</label><input name="max_uses" value="100"></div><div style="flex:0"><button>Create</button></div></div></form>{% endblock %}

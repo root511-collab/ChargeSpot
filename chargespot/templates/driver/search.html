@@ -1,0 +1,17 @@
+{% extends 'base.html' %}{% block title %}Find a charger · ChargeSpot{% endblock %}{% block content %}
+<h1>Find a charging station</h1>
+<form class="card" method="get"><div class="row">
+<div><label>Your latitude</label><input name="lat" value="{{ f.lat }}"></div>
+<div><label>Your longitude</label><input name="lon" value="{{ f.lon }}"></div>
+<div><label>Connector</label><select name="connector"><option value="">Any</option>{% for c in connectors %}<option {{ 'selected' if f.connector==c }}>{{ c }}</option>{% endfor %}</select></div>
+<div><label>Max price (SAR/kWh)</label><input name="max_price" value="{{ f.max_price }}" placeholder="e.g. 1.00"></div>
+<div><label>Max distance (km)</label><input name="max_km" value="{{ f.max_km }}" placeholder="e.g. 10"></div>
+<div style="min-width:150px"><label><input type="checkbox" name="available" value="1" style="width:auto" {{ 'checked' if f.available }}> Available now</label></div>
+<div style="flex:0"><button>Search</button></div></div></form>
+<p class="muted">{{ results|length }} station(s) found, nearest first. Charger status is updated from the station sensors.</p>
+{% for r in results %}<div class="card"><div class="station"><div>
+<h2 style="margin:0">{{ r.station.name }}</h2><div class="muted">{{ r.station.address }} · {{ r.distance }} km away · from {{ '%.2f'|format(r.min_price) }} SAR/kWh</div>
+<div class="chips">{% for c in r.chargers %}<span class="badge {{ c.status }}">{{ c.label }} · {{ c.connector_type }} {{ c.current_type }} · {{ c.status }}</span>{% endfor %}</div></div>
+<div style="text-align:right"><div class="big">{{ r.available }}</div><div class="muted">available</div><p><a class="btn" href="{{ url_for('driver.station', sid=r.station.id) }}">View &amp; reserve</a></p></div></div></div>
+{% else %}<div class="card">No station matches these filters. Try a larger distance or another connector.</div>{% endfor %}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}{% block title %}Stations · ChargeSpot{% endblock %}{% block content %}
+<h1>Charging stations</h1>
+<div class="tbl"><table><tr><th>Name</th><th>Address</th><th>Location</th><th>Chargers</th><th>State</th></tr>
+{% for s in rows %}<tr><td><a href="{{ url_for('admin.station', sid=s.id) }}">{{ s.name }}</a></td><td>{{ s.address }}</td><td>{{ '%.4f'|format(s.latitude) }}, {{ '%.4f'|format(s.longitude) }}</td>
+<td>{{ s.n }}</td><td>{{ 'Active' if s.is_active else 'Deleted (history kept)' }}</td></tr>{% endfor %}</table></div>
+<form class="card" method="post"><h2 style="margin-top:0">Add a station</h2><div class="row">
+<div><label>Name</label><input name="name" required></div><div><label>Address</label><input name="address" required></div>
+<div><label>Latitude</label><input name="latitude" required></div><div><label>Longitude</label><input name="longitude" required></div>
+<div style="flex:0"><button>Create</button></div></div></form>{% endblock %}

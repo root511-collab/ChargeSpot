@@ -1,0 +1,24 @@
+{% extends 'base.html' %}{% block title %}{{ s.name }} · ChargeSpot{% endblock %}{% block content %}
+<p><a href="{{ url_for('admin.stations') }}">← All stations</a></p><h1>{{ s.name }}{% if not s.is_active %} <span class="badge Out">Deleted</span>{% endif %}</h1>
+<div class="grid g2"><form class="card" method="post"><input type="hidden" name="form" value="station"><h2 style="margin-top:0">Station details</h2>
+<label>Name</label><input name="name" value="{{ s.name }}"><label>Address</label><input name="address" value="{{ s.address }}">
+<div class="row"><div><label>Latitude</label><input name="latitude" value="{{ s.latitude }}"></div><div><label>Longitude</label><input name="longitude" value="{{ s.longitude }}"></div></div>
+<p><button>Save changes</button></p></form>
+<form class="card" method="post"><input type="hidden" name="form" value="charger"><h2 style="margin-top:0">Register a charger port</h2>
+<div class="row"><div><label>Label</label><input name="label" placeholder="e.g. O-4"></div><div><label>Connector</label><select name="connector_type">{% for c in connectors %}<option>{{ c }}</option>{% endfor %}</select></div>
+<div><label>AC/DC</label><select name="current_type"><option>AC</option><option>DC</option></select></div></div>
+<div class="row"><div><label>Power (kW)</label><input name="power_kw"></div><div><label>Price (SAR/kWh)</label><input name="price_per_kwh"></div></div>
+<p><button>Add charger</button></p></form></div>
+<h2>Charger ports</h2><div class="tbl"><table><tr><th>Label</th><th>Type</th><th>Price</th><th>Status</th><th>Set status</th><th>Flag</th><th></th></tr>
+{% for c in chargers %}<tr><td>{{ c.label }}{% if not c.is_active %} <span class="muted">(removed)</span>{% endif %}</td><td>{{ c.connector_type }} · {{ c.current_type }} · {{ c.power_kw|int }} kW</td>
+<td><form class="inline" method="post" action="{{ url_for('admin.charger', cid=c.id) }}"><input type="hidden" name="action" value="price"><input name="price_per_kwh" value="{{ c.price_per_kwh }}" style="width:70px"> <button class="small sec">Save</button></form></td>
+<td><span class="badge {{ c.status }}">{{ c.status }}</span>{% if c.is_flagged %} <span class="badge Occupied">Flagged</span>{% endif %}</td>
+<td><form class="inline" method="post" action="{{ url_for('admin.charger', cid=c.id) }}"><input type="hidden" name="action" value="status"><select name="status" style="width:auto">{% for st in statuses %}<option {{ 'selected' if st==c.status }}>{{ st }}</option>{% endfor %}</select> <button class="small sec">Set</button></form></td>
+<td><form class="inline" method="post" action="{{ url_for('admin.charger', cid=c.id) }}">{% if c.is_flagged %}<input type="hidden" name="action" value="unflag"><button class="small sec">Clear flag</button>{% else %}<input type="hidden" name="action" value="flag"><input name="reason" placeholder="Reason" style="width:110px"> <button class="small sec">Flag</button>{% endif %}</form></td>
+<td>{% if c.is_active %}<form class="inline" method="post" action="{{ url_for('admin.charger', cid=c.id) }}"><input type="hidden" name="action" value="remove"><button class="small danger">Remove</button></form>{% endif %}</td></tr>{% endfor %}</table></div>
+<div class="grid g2"><div><h2>Station history</h2><div class="tbl"><table><tr><th>When</th><th>Action</th><th>Details</th><th>By</th></tr>
+{% for h in hist %}<tr><td>{{ h.changed_at }}</td><td>{{ h.action }}</td><td>{{ h.details }}</td><td>{{ h.who }}</td></tr>{% endfor %}</table></div></div>
+<div><h2>Recent charger status changes</h2><div class="tbl"><table><tr><th>When</th><th>Charger</th><th>Change</th><th>Source</th></tr>
+{% for l in logs %}<tr><td>{{ l.changed_at }}</td><td>{{ l.label }}</td><td>{{ l.old_status }} → {{ l.new_status }}</td><td>{{ l.source }}</td></tr>{% else %}<tr><td colspan="4">No changes yet.</td></tr>{% endfor %}</table></div></div></div>
+{% if s.is_active %}<form method="post" onsubmit="return confirm('Delete this station? Its history is kept.')"><input type="hidden" name="form" value="delete"><button class="danger">Delete station</button></form>{% endif %}
+{% endblock %}

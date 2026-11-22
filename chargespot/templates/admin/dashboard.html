@@ -1,0 +1,18 @@
+{% extends 'base.html' %}{% block title %}Dashboard · ChargeSpot{% endblock %}{% block content %}
+<div class="station"><h1>Platform dashboard</h1><form method="post" action="{{ url_for('admin.backup') }}"><button class="sec">Create backup now</button></form></div>
+<div class="grid g4"><div class="stat"><b>{{ stats.active_stations }}</b><span>Active stations</span></div>
+<div class="stat"><b>{{ stats.sessions_today }}</b><span>Sessions today</span></div>
+<div class="stat"><b>{{ stats.revenue_today|money }}</b><span>Revenue today</span></div>
+<div class="stat"><b>{{ stats.occupancy }}%</b><span>Current occupancy ({{ stats.chargers }} chargers)</span></div></div>
+<div class="grid g2"><div><h2>Charger status now</h2><div class="card">{% for k, v in stats.by_status.items() %}
+<div class="station" style="margin:6px 0"><span class="badge {{ k }}">{{ k }}</span><b>{{ v }}</b></div>{% endfor %}</div>
+<h2>Flagged / out-of-service chargers</h2><div class="tbl"><table><tr><th>Station</th><th>Charger</th><th>Status</th><th>Reason</th></tr>
+{% for c in flagged %}<tr><td>{{ c.station }}</td><td><a href="{{ url_for('admin.station', sid=c.station_id) }}">{{ c.label }}</a></td><td><span class="badge {{ c.status }}">{{ c.status }}</span></td><td>{{ c.flag_reason or '–' }}</td></tr>
+{% else %}<tr><td colspan="4">No flagged chargers.</td></tr>{% endfor %}</table></div></div>
+<div><h2>Reservations vs cancellations (14 days)</h2><div class="tbl"><table><tr><th>Day</th><th>Reservations</th><th>Cancellations</th><th></th></tr>
+{% for t in trends %}<tr><td>{{ t.day[5:] }}</td><td>{{ t.reservations }}</td><td>{{ t.cancellations }}</td>
+<td style="width:40%"><div class="bar"><i style="width:{{ [t.reservations*12,100]|min }}%"></i></div></td></tr>{% endfor %}</table></div></div></div>
+<h2>Charger utilization (last 7 days)</h2><div class="tbl"><table><tr><th>Station</th><th>Charger</th><th>Sessions</th><th>Energy</th><th>Revenue</th><th>Utilization</th></tr>
+{% for u in util %}<tr><td>{{ u.station }}</td><td>{{ u.charger }}</td><td>{{ u.sessions }}</td><td>{{ u.energy }} kWh</td><td>{{ u.revenue|money }}</td>
+<td><div class="bar"><i style="width:{{ [u.utilization*3,100]|min }}%"></i></div><span class="muted">{{ u.utilization }}%</span></td></tr>{% endfor %}</table></div>
+{% endblock %}

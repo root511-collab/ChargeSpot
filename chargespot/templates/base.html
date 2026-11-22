@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}ChargeSpot{% endblock %}</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head><body>
+<header><div class="brand">⚡ ChargeSpot<span>{% if g.user and g.user.role=='admin' %}Admin Dashboard{% else %}Driver App{% endif %}</span></div>
+{% if g.user %}<nav>{% set ep = request.endpoint or '' %}
+{% if g.user.role == 'admin' %}
+<a href="{{ url_for('admin.dashboard') }}" class="{{ 'on' if ep=='admin.dashboard' }}">Dashboard</a>
+<a href="{{ url_for('admin.stations') }}" class="{{ 'on' if ep in ('admin.stations','admin.station') }}">Stations</a>
+<a href="{{ url_for('admin.users') }}" class="{{ 'on' if ep=='admin.users' }}">Accounts</a>
+<a href="{{ url_for('admin.reports') }}" class="{{ 'on' if ep=='admin.reports' }}">Reports</a>
+<a href="{{ url_for('admin.promos') }}" class="{{ 'on' if ep=='admin.promos' }}">Promo Codes</a>
+<a href="{{ url_for('admin.simulator') }}" class="{{ 'on' if ep=='admin.simulator' }}">IoT Simulator</a>
+{% else %}
+<a href="{{ url_for('driver.search') }}" class="{{ 'on' if ep in ('driver.search','driver.station') }}">Find a Charger</a>
+<a href="{{ url_for('driver.reservations') }}" class="{{ 'on' if ep in ('driver.reservations','driver.session_view') }}">My Reservations</a>
+<a href="{{ url_for('driver.history') }}" class="{{ 'on' if ep=='driver.history' }}">History</a>
+<a href="{{ url_for('driver.profile') }}" class="{{ 'on' if ep=='driver.profile' }}">Profile</a>
+{% endif %}</nav><div class="who">{{ g.user.name }}<a href="{{ url_for('auth.logout') }}">Log out</a></div>{% endif %}</header>
+<main>{% for cat, msg in get_flashed_messages(with_categories=true) %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}
+{% block content %}{% endblock %}</main></body></html>

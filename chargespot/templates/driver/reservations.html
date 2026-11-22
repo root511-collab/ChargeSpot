@@ -1,0 +1,16 @@
+{% extends 'base.html' %}{% block title %}My reservations · ChargeSpot{% endblock %}{% block content %}
+<h1>My reservations</h1>
+{% for r in active %}<div class="card"><div class="station"><div>
+<h2 style="margin:0">{{ r.station }} · Charger {{ r.label }}</h2>
+<div class="muted">{{ r.start_time }} → {{ r.end_time[11:] }} · {{ r.connector_type }} · {{ '%.2f'|format(r.price_per_kwh) }} SAR/kWh</div>
+<p>Booking confirmation: <code>{{ r.code }}</code>{% if r.promo_code %} · Promo code <span class="badge Available">{{ r.promo_code }}</span>{% endif %}</p></div><div><span class="badge {{ r.status }}">{{ r.status }}</span></div></div>
+{% if r.status == 'Held' %}<div class="row">
+<form class="inline" method="post" action="{{ url_for('driver.checkin', rid=r.id) }}"><button>Check in &amp; start charging</button></form>
+<form class="inline" method="post" action="{{ url_for('driver.cancel', rid=r.id) }}"><button class="sec">Cancel</button></form></div>
+<form method="post" action="{{ url_for('driver.modify', rid=r.id) }}"><div class="row">
+<div><label>New start</label><input type="datetime-local" name="start" value="{{ r.start_time.replace(' ','T') }}"></div>
+<div><label>New end</label><input type="datetime-local" name="end" value="{{ r.end_time.replace(' ','T') }}"></div>
+<div style="flex:0"><button class="sec">Change time</button></div></div></form>
+{% else %}<p><a class="btn" href="{{ url_for('driver.session_view', sid=r.session_id) }}">Open charging session</a></p>{% endif %}</div>
+{% else %}<div class="card">You have no active reservations. <a href="{{ url_for('driver.search') }}">Find a charger</a>.</div>{% endfor %}
+{% endblock %}

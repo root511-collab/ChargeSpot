@@ -1,0 +1,13 @@
+{% extends 'base.html' %}{% block title %}Charging session · ChargeSpot{% endblock %}{% block content %}
+<h1>Charging session</h1>
+<div class="grid g4"><div class="stat"><b>{{ '%.1f'|format(s.energy_kwh) }} kWh</b><span>Energy delivered</span></div>
+{% set gross = s.energy_kwh * s.price_per_kwh %}{% set disc = (gross * s.promo_percent / 100) if s.promo_percent else 0 %}
+<div class="stat"><b>{{ (gross - disc)|money }}</b><span>Cost so far{% if s.promo_code %} · {{ s.promo_code }} −{{ s.promo_percent }}%{% endif %}</span></div>
+<div class="stat"><b>{{ s.started_at[11:] }}</b><span>Started · ends by {{ s.end_time[11:] }}</span></div>
+<div class="stat"><b>{{ s.label }}</b><span>{{ s.station }}</span></div></div>
+{% if not s.ended_at %}<div class="card"><p>Energy readings come from the charger's IoT sensor. In this release the sensor is simulated:</p>
+<form class="inline" method="post" action="{{ url_for('driver.simulate', sid=s.id) }}"><input type="hidden" name="kwh" value="5"><button class="sec">Simulate sensor reading (+5 kWh)</button></form>
+<form class="inline" method="post" action="{{ url_for('driver.end', sid=s.id) }}"><button>Stop charging &amp; pay</button></form>
+<p class="muted">The session also ends automatically when the sensor reports that the cable was unplugged. Cost = energy (kWh) × {{ '%.2f'|format(s.price_per_kwh) }} SAR/kWh.</p></div>
+{% else %}<div class="card">This session ended at {{ s.ended_at }}. Total cost {{ s.cost|money }}.</div>{% endif %}
+{% endblock %}
